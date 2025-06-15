@@ -3,7 +3,7 @@
 import { AnchorProvider, Program } from "@project-serum/anchor";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useState } from "react";
 
 const PROGRAM_ID = new PublicKey("nJiToJCPGNjxQ3Q6ySWgLqEX1AybLhaJu6niQdBxosK");
 
@@ -76,6 +76,7 @@ export default function Home() {
   const { connection } = useConnection();
   const wallet = useWallet();
 
+  /*eslint-disable-next-line @typescript-eslint/no-explicit-any*/
   const [notes, setNotes] = useState<any[]>([]);
 
   const [loading, setLoading] = useState(false);
@@ -84,21 +85,22 @@ export default function Home() {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [deletingNoteTitle, setDeletingNoteTitle] = useState("");
 
-  const [message, setMessage] = useState("");
-
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
   const [editContent, setEditContent] = useState("");
+  /*eslint-disable-next-line @typescript-eslint/no-explicit-any*/
   const [editNote, setEditNote] = useState<any>(null);
 
   const getProgram = () => {
     if (!wallet.publicKey || !wallet.signTransaction) return null;
+    /*eslint-disable-next-line @typescript-eslint/no-explicit-any*/
     const provider = new AnchorProvider(connection, wallet as any, {});
+    /*eslint-disable-next-line @typescript-eslint/no-explicit-any*/
     return new Program(IDL as any, PROGRAM_ID, provider);
   };
 
-  const getNoteAddress = (title: String) => {
+  const getNoteAddress = (title: string) => {
     if (!wallet.publicKey || !wallet.signTransaction) return null;
     const [noteAddress] = PublicKey.findProgramAddressSync(
       [Buffer.from("note"), wallet.publicKey.toBuffer(), Buffer.from(title)],
@@ -126,10 +128,8 @@ export default function Home() {
       ]);
 
       setNotes(notes);
-      setMessage("");
     } catch (error) {
       console.log("Error loading notes", error);
-      setMessage("Error loading the notes");
     }
     setLoading(false);
   };
@@ -138,17 +138,14 @@ export default function Home() {
 
   const creatNote = async () => {
     if (!title.trim() || !content.trim()) {
-      setMessage("Please fill the title and content");
       return;
     }
 
     if (title.length > 100) {
-      setMessage("Title too long (Max length: 100 chars)");
       return;
     }
 
     if (content.length > 1000) {
-      setMessage("Content too long (Max length: 1000 chars)");
       return;
     }
 
@@ -169,26 +166,23 @@ export default function Home() {
         })
         .rpc();
 
-      setMessage("Note create successfully!");
       setTitle("");
       setContent("");
       await loadNotes();
     } catch (error) {
       console.log("Error creating note", error);
-      setMessage("Error creating note");
     }
     setCreateLoading(false);
   };
   // update note
 
+  /*eslint-disable-next-line @typescript-eslint/no-explicit-any*/
   const updateNote = async (note: any) => {
     if (!editContent.trim()) {
-      setMessage("Content cannot be empty");
       return;
     }
 
     if (editContent.length > 1000) {
-      setMessage("Content too long (Max length: 1000 chars)");
       return;
     }
 
@@ -205,18 +199,17 @@ export default function Home() {
         .accounts({ note: noteAddress, author: wallet.publicKey })
         .rpc();
 
-      setMessage("Note updated successfully!");
       setEditContent("");
       setEditNote(null);
       await loadNotes();
     } catch (error) {
       console.log("Error update note", error);
-      setMessage("Error updating note");
     }
     setUpdateLoading(false);
   };
   // delete note
 
+  /*eslint-disable-next-line @typescript-eslint/no-explicit-any*/
   const deleteNote = async (note: any) => {
     setDeleteLoading(true);
     try {
@@ -231,11 +224,9 @@ export default function Home() {
         .accounts({ note: noteAddress, author: wallet.publicKey })
         .rpc();
 
-      setMessage("Note deleted successfully!");
       await loadNotes();
     } catch (error) {
       console.log("Error deleting the note", error);
-      setMessage("Error deleting the note");
     }
     setDeleteLoading(false);
     setDeletingNoteTitle("");
@@ -305,6 +296,7 @@ export default function Home() {
         <div>
           <h2 className="text-2xl mb-6">Your Notes</h2>
           <div>
+            {/*eslint-disable-next-line @typescript-eslint/no-explicit-any*/}
             {notes?.map((note: any) => {
               return (
                 <div

@@ -1,6 +1,11 @@
 # Decentralized Notes App on Solana
 
 A fully decentralized notes application built on the Solana blockchain using Rust, Anchor Framework, Next.js, and Tailwind CSS. Store, manage, and access your notes in a trustless  environment.
+
+#
+
+Live Link: https://notes-dapp-solana.vercel.app
+
 #
 ![image](https://github.com/user-attachments/assets/481c5ac5-361e-4c47-9d6f-1f708e63729e)
 

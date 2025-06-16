@@ -85,6 +85,8 @@ export default function Home() {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [deletingNoteTitle, setDeletingNoteTitle] = useState("");
 
+  const [message, setMessage] = useState("");
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
@@ -128,6 +130,7 @@ export default function Home() {
       ]);
 
       setNotes(notes);
+      setMessage("");
     } catch (error) {
       console.log("Error loading notes", error);
     }
@@ -138,17 +141,19 @@ export default function Home() {
 
   const creatNote = async () => {
     if (!title.trim() || !content.trim()) {
+      setMessage("❌ Please fill in both title and content");
       return;
     }
 
     if (title.length > 100) {
+      setMessage("❌ Title too long (max 100 characters)");
       return;
     }
 
     if (content.length > 1000) {
+      setMessage("❌ Content too long (max 1000 characters)");
       return;
     }
-
     setCreateLoading(true);
     try {
       const program = getProgram();
@@ -166,11 +171,13 @@ export default function Home() {
         })
         .rpc();
 
+      setMessage("✅ Note created successfully!");
       setTitle("");
       setContent("");
       await loadNotes();
     } catch (error) {
       console.log("Error creating note", error);
+      setMessage("✅ Note created successfully!");
     }
     setCreateLoading(false);
   };
@@ -179,10 +186,12 @@ export default function Home() {
   /*eslint-disable-next-line @typescript-eslint/no-explicit-any*/
   const updateNote = async (note: any) => {
     if (!editContent.trim()) {
+      setMessage("❌ Content cannot be empty");
       return;
     }
 
     if (editContent.length > 1000) {
+      setMessage("❌ Content too long (max 1000 characters)");
       return;
     }
 
@@ -199,11 +208,13 @@ export default function Home() {
         .accounts({ note: noteAddress, author: wallet.publicKey })
         .rpc();
 
+      setMessage("✅ Note updated successfully!");
       setEditContent("");
       setEditNote(null);
       await loadNotes();
     } catch (error) {
       console.log("Error update note", error);
+      setMessage("❌ Error updating note");
     }
     setUpdateLoading(false);
   };
@@ -224,9 +235,11 @@ export default function Home() {
         .accounts({ note: noteAddress, author: wallet.publicKey })
         .rpc();
 
+      setMessage("✅ Note deleted successfully!");
       await loadNotes();
     } catch (error) {
       console.log("Error deleting the note", error);
+      setMessage("❌ Error deleting note");
     }
     setDeleteLoading(false);
     setDeletingNoteTitle("");
@@ -240,16 +253,97 @@ export default function Home() {
 
   if (!wallet.connected) {
     return (
-      <div className="text-gray-700">
-        Wallet Not Connected! Please Connect Your Wallet.
+      <div className="flex flex-col items-center justify-center p-8  border border-slate-200 rounded-xl shadow-sm">
+        <div className="flex items-center justify-center w-16 h-16 bg-amber-100 rounded-full mb-4">
+          <svg
+            className="w-8 h-8 text-amber-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+            />
+          </svg>
+        </div>
+
+        <div className="text-center space-y-2">
+          <h3 className="text-lg font-semibold text-slate-800">
+            Wallet Not Connected
+          </h3>
+          <p className="text-sm text-slate-600 max-w-md">
+            Please connect your wallet to access this feature and interact with
+            the application.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 mt-4 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+          <svg
+            className="w-4 h-4 text-amber-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+            />
+          </svg>
+          <span className="text-xs text-amber-700 font-medium">
+            Connection Required
+          </span>
+        </div>
+
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-sm text-blue-800 mb-2">
+            Don't have a wallet? Get Phantom Wallet:
+          </p>
+          <a
+            href="https://chromewebstore.google.com/detail/phantom/bfnaelmomeimhlpmgjnjophhpkkoljpa"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+              />
+            </svg>
+            Install from Chrome Web Store
+          </a>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="text-gray-700">
+      {message && (
+        <div
+          className={`p-3 mb-5 rounded-lg border ${
+            message.includes("✅")
+              ? "bg-green-100 border-green-300 text-green-800"
+              : "bg-red-100 border-red-300 text-red-800"
+          }`}
+        >
+          {message}
+        </div>
+      )}
       <div className="mb-6">
-        <h2 className="text-2xl mb-6">Create New Note</h2>
+        <h2 className="text-2xl mb-6 font-medium">Create New Note</h2>
         <div className="mb-4">
           <label className="text-sm block font-medium">
             Title ({title.length}/100)
@@ -294,7 +388,7 @@ export default function Home() {
         <div>Loading your notes...</div>
       ) : (
         <div>
-          <h2 className="text-2xl mb-6">Your Notes</h2>
+          <h2 className="text-2xl mb-6 font-medium">Your Notes</h2>
           <div>
             {/*eslint-disable-next-line @typescript-eslint/no-explicit-any*/}
             {notes?.map((note: any) => {

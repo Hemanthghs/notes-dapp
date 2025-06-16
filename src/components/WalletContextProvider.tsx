@@ -30,7 +30,9 @@ const WalletContextProvider = ({ children }: { children: ReactNode }) => {
                 <WalletMultiButton />
               </div>
             </header>
-            <main className="p-5">{children}</main>
+            <main className="p-5 mx-auto w-full lg:w-[50%] flex flex-col justify-center">
+              {children}
+            </main>
           </div>
         </WalletModalProvider>
       </WalletProvider>

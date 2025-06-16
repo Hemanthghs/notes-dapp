@@ -301,7 +301,7 @@ export default function Home() {
 
         <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-sm text-blue-800 mb-2">
-            Don't have a wallet? Get Phantom Wallet:
+            Don&apos;t have a wallet? Get Phantom Wallet:
           </p>
           <a
             href="https://chromewebstore.google.com/detail/phantom/bfnaelmomeimhlpmgjnjophhpkkoljpa"
